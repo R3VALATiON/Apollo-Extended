@@ -13,6 +13,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
+      - name: Validate installer PowerShell scripts
+        shell: pwsh
+        run: |
+          Get-ChildItem src_assets/windows/misc -Filter *.ps1 -Recurse | ForEach-Object {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile($_.FullName, [ref]$tokens, [ref]$parseErrors) | Out-Null
+            if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+          }
       - uses: actions/setup-node@v4
         with:
           node-version: '22'

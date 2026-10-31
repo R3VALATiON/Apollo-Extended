@@ -109,8 +109,8 @@ if (!(Wait-TcpPort -Port 3242 -TimeoutMs 15000)) {
     }
     else {
         throw "VIIPER did not open its local API port. Restart Windows and use Repair if the problem remains."
-    } else { $actions.Add("VIIPER helper refreshed") }
-}
+    }
+} else { $actions.Add("VIIPER helper refreshed") }
 }
 }
 catch {

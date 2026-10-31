@@ -53,9 +53,6 @@ install(TARGETS sunshinesvc RUNTIME DESTINATION "tools" COMPONENT application)
 install(DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/drivers/sudovda"
         DESTINATION "drivers"
         COMPONENT sudovda)
-install(FILES "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/drivers/dualsense-audio/devcon.exe"
-        DESTINATION "drivers/sudovda"
-        COMPONENT sudovda)
 
 # Mandatory scripts
 install(DIRECTORY "${SUNSHINE_SOURCE_ASSETS_DIR}/windows/misc/service/"

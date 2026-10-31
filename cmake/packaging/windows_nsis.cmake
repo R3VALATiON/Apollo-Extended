@@ -1,9 +1,9 @@
 # NSIS Packaging
 # see options at: https://cmake.org/cmake/help/latest/cpack_gen/nsis.html
 
-set(CPACK_NSIS_DISPLAY_NAME "Apollo Extended")
-set(CPACK_NSIS_PACKAGE_NAME "Apollo Extended")
-set(CPACK_PACKAGE_FILE_NAME "Apollo-Extended")
+set(CPACK_NSIS_DISPLAY_NAME "Apollo - Unofficial Personal Testing Preview")
+set(CPACK_NSIS_PACKAGE_NAME "Apollo - Unofficial Personal Testing Preview")
+set(CPACK_PACKAGE_FILE_NAME "Apollo-Personal-Development-Testing-0.2.0-preview.1-Windows-x64")
 
 set(CPACK_NSIS_INSTALLED_ICON_NAME "${PROJECT__DIR}\\\\${PROJECT_EXE}")
 

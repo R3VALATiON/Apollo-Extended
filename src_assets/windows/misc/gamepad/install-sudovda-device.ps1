@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 $driverRoot = [IO.Path]::GetFullPath($DriverDirectory)
 $inf = Join-Path $driverRoot 'SudoVDA.inf'
 $certificate = Join-Path $driverRoot 'sudovda.cer'
-$devcon = Join-Path $driverRoot 'devcon.exe'
+$nefcon = Join-Path $driverRoot 'nefconc.exe'
 $hardwareId = 'Root\SudoMaker\SudoVDA'
 
 function Get-SudoVdaDevice {
@@ -17,7 +17,7 @@ function Get-SudoVdaDevice {
         Select-Object -First 1
 }
 
-foreach ($required in @($inf, $certificate, $devcon)) {
+foreach ($required in @($inf, $certificate, $nefcon)) {
     if (!(Test-Path -LiteralPath $required)) { throw "Required SudoVDA repair file is missing: $required" }
 }
 
@@ -36,7 +36,7 @@ if ($Force -or !$existing -or $existing.Status -ne 'OK' -or $existing.ConfigMana
     if ($existing) {
         & "$env:SystemRoot\System32\pnputil.exe" /remove-device $existing.InstanceId | Out-Host
     }
-    & $devcon install $inf $hardwareId | Out-Host
+    & $nefcon --create-device-node --class-name Display --class-guid "4D36E968-E325-11CE-BFC1-08002BE10318" --hardware-id $hardwareId | Out-Host
     if ($LASTEXITCODE -notin @(0, 1)) { throw "Creating the SudoVDA display device failed with exit code $LASTEXITCODE." }
 }
 
