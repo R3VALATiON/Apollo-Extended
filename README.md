@@ -9,6 +9,8 @@ See [personal build descriptions and validation status](BUILD_NOTES.md) and the 
 
 The personal implementation is maintained on [feature/native-dualsense-adaptive](https://github.com/R3VALATiON/Apollo-Extended/tree/feature/native-dualsense-adaptive). The upstream documentation below describes the upstream work; it does not certify the validation status of this personal fork.
 
+**Initial personal prerelease:** [v0.2.0-personal-preview.1 — Windows x64 installer, changelog and checksums](https://github.com/R3VALATiON/Apollo-Extended/releases/tag/v0.2.0-personal-preview.1).
+
 ---
 
 ## Upstream reference documentation
