@@ -1,3 +1,18 @@
+# Apollo Windows — Personal Development & Testing Fork
+
+> [!WARNING]
+> **UNOFFICIAL PERSONAL DEVELOPMENT / TESTING BUILD — R3VALATiON**
+>
+> This is an independent experimental fork. Its builds are **not official releases of the original project or the Extended upstream project**, and no upstream endorsement is implied. Features may be incomplete or unverified. Please report issues introduced by this fork here, not as regressions in the main project.
+
+See [personal build descriptions and validation status](BUILD_NOTES.md) and the [notice included with build artifacts](BUILD_NOTICE.md).
+
+The personal implementation is maintained on [feature/native-dualsense-adaptive](https://github.com/R3VALATiON/Apollo-Extended/tree/feature/native-dualsense-adaptive). The upstream documentation below describes the upstream work; it does not certify the validation status of this personal fork.
+
+---
+
+## Upstream reference documentation
+
 # Apollo Extended
 
 ## Native DualSense emulation
