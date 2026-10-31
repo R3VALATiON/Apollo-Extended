@@ -2,18 +2,20 @@
 
 # common cpack options
 set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(CPACK_PACKAGE_VENDOR "SudoMaker")
+set(CPACK_PACKAGE_VENDOR "R3VALATiON - Personal Development and Testing")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
 set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_PACKAGE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/cpack_artifacts)
-set(CPACK_PACKAGE_CONTACT "https://www.sudomaker.com")
-set(CPACK_PACKAGE_DESCRIPTION ${CMAKE_PROJECT_DESCRIPTION})
+set(CPACK_PACKAGE_CONTACT "https://github.com/R3VALATiON/Apollo-Extended")
+set(CPACK_PACKAGE_DESCRIPTION "Unofficial personal development and testing build. Independent experimental fork; not an official Apollo or Apollo Extended release.")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Apollo - Unofficial Personal Development and Testing Preview")
 set(CPACK_PACKAGE_HOMEPAGE_URL ${CMAKE_PROJECT_HOMEPAGE_URL})
 set(CPACK_RESOURCE_FILE_LICENSE ${PROJECT_SOURCE_DIR}/LICENSE)
 set(CPACK_PACKAGE_ICON ${PROJECT_SOURCE_DIR}/apollo.png)
-set(CPACK_PACKAGE_FILE_NAME "${CMAKE_PROJECT_NAME}")
+set(CPACK_PACKAGE_FILE_NAME "Apollo-Personal-Development-Testing-${PROJECT_VERSION}")
+install(FILES "${PROJECT_SOURCE_DIR}/BUILD_NOTICE.md" DESTINATION "." COMPONENT application)
 set(CPACK_STRIP_FILES YES)
 
 # install common assets
