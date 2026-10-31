@@ -9,7 +9,7 @@ permissions:
   actions: read
 concurrency:
   group: publish-initial-personal-preview
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -48,6 +48,22 @@ jobs:
             test "${#matches[@]}" -eq 1
             cp "${matches[0]}" "release/$notice"
           done
+          cat > release/BUILD_NOTES.md <<'NOTES'
+          # Apollo Windows — 0.2.0 Personal Testing Preview 1
+          
+          UNOFFICIAL PERSONAL DEVELOPMENT / TESTING BUILD — R3VALATiON.
+          Independent experimental fork; not an official upstream release.
+          
+          Native-feedback policy tests, installer PowerShell syntax validation,
+          full Windows compilation and NSIS packaging passed for source
+          5a4198ab9fe108c4cf569308270306e6ce13f0bf.
+          
+          Build: https://github.com/R3VALATiON/Apollo-Extended/actions/runs/41237024163
+          
+          Physical controller behavior, Windows driver installation, upgrades,
+          game recognition and network-quality adaptation remain unverified
+          on real hardware. See CHANGELOG.md and BUILD_NOTICE.md for scope.
+          NOTES
           cp releases/v0.2.0-personal-preview.1.md release/CHANGELOG.md
           (cd release && sha256sum * > SHA256SUMS.txt)
       - name: Publish unofficial prerelease
