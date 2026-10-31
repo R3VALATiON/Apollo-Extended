@@ -43,6 +43,7 @@ extern "C" {
 #include "system_tray.h"
 #include "thread_safe.h"
 #include "utility.h"
+#include "native_feedback_policy.h"
 #ifdef _WIN32
 #include "platform/windows/dualsense_audio.h"
 #include "platform/windows/mic_write.h"
@@ -449,6 +450,7 @@ namespace stream {
       std::deque<std::array<std::uint8_t, platf::dualsense_audio::bytes_per_packet>> packets;
       std::uint16_t sequence = 0;
       std::uint64_t dropped_packets = 0;
+      native_feedback::lease_gate feedback_lease;
     } dualsense_audio;
 
     struct {
@@ -953,6 +955,7 @@ namespace stream {
             const auto result = platf::dualsense_audio::capture(
               session->dualsense_audio.stop,
               [session](std::span<const std::uint8_t> pcm) {
+                if (!session->dualsense_audio.feedback_lease.allows(controller_diagnostics::now_ms())) return;
                 if (!controller_diagnostics::dualsense_audio_capture_active.exchange(true)) {
                   ++controller_diagnostics::dualsense_audio_capture_starts;
                 }
@@ -1205,6 +1208,34 @@ namespace stream {
     });
 
 #ifdef _WIN32
+    // Versioned native-PCM policy uses the already authenticated/encrypted session.
+    // It never recreates the gamepad or changes adaptive-trigger/control feedback.
+    server->map(0x5506, [](session_t *session, const std::string_view &payload) {
+      if (!(session->permission & crypto::PERM::_all_inputs) ||
+          !(session->config.encryptionFlagsEnabled & SS_ENC_CONTROL_V2)) return;
+      const auto request = native_feedback::parse(std::span {
+          reinterpret_cast<const std::uint8_t *>(payload.data()), payload.size()});
+      if (!request) return;
+      session->dualsense_audio.feedback_lease.apply(*request, controller_diagnostics::now_ms());
+      if (!request->enabled) {
+        auto lock = std::lock_guard {session->dualsense_audio.mutex};
+        session->dualsense_audio.packets.clear();
+      }
+      control_adaptive_triggers_t ack {};
+      ack.header.type = packetTypes[IDX_SET_ADAPTIVE_TRIGGERS];
+      ack.header.payloadLength = sizeof(ack) - sizeof(control_header_v2);
+      ack.event_flags = 0x40;
+      ack.type_left = 0x42; ack.type_right = 0x57; // 'BW'; not a physical trigger effect.
+      ack.left[0] = 0x50; ack.left[1] = 1;
+      ack.left[2] = request->enabled ? 1 : 0; ack.left[3] = 0;
+      ack.left[4] = static_cast<std::uint8_t>(request->id);
+      ack.left[5] = static_cast<std::uint8_t>(request->id >> 8);
+      std::array<std::uint8_t, sizeof(control_encrypted_t) +
+          crypto::cipher::round_to_pkcs7_padded(sizeof(ack)) + crypto::cipher::tag_size> encrypted;
+      const auto encoded = encode_control(session, util::view(ack), encrypted);
+      session->broadcast_ref->control_server.send(encoded, session->control.peer);
+    });
+
     server->map(packetTypes[IDX_MIC_AUDIO_DATA], [](session_t *session, const std::string_view &payload) {
       if (!(session->permission & crypto::PERM::_all_inputs)) {
         BOOST_LOG(debug) << "Permission Microphone Input denied for [" << session->device_name << ']';
@@ -1445,7 +1476,11 @@ namespace stream {
             }
 
 #ifdef _WIN32
-            if (session->dualsense_audio.active.load(std::memory_order_acquire)) {
+            if (session->dualsense_audio.active.load(std::memory_order_acquire) &&
+                !session->dualsense_audio.feedback_lease.allows(controller_diagnostics::now_ms())) {
+              auto lock = std::lock_guard {session->dualsense_audio.mutex};
+              session->dualsense_audio.packets.clear();
+            } else if (session->dualsense_audio.active.load(std::memory_order_acquire)) {
               has_realtime_dualsense_audio = true;
               for (int packet_index = 0; packet_index < 8; ++packet_index) {
                 dualsense_audio_packet_t pcm;

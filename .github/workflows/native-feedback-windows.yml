@@ -1,0 +1,74 @@
+name: Personal Development Testing - Apollo-Windows-x64
+run-name: "UNOFFICIAL personal development/testing - Apollo-Windows-x64 #${{ github.run_number }}"
+on:
+  workflow_dispatch:
+  push:
+    branches: [feature/native-dualsense-adaptive]
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          path-type: inherit
+          install: >-
+            git
+            mingw-w64-ucrt-x86_64-boost
+            mingw-w64-ucrt-x86_64-cmake
+            mingw-w64-ucrt-x86_64-cppwinrt
+            mingw-w64-ucrt-x86_64-curl-winssl
+            mingw-w64-ucrt-x86_64-MinHook
+            mingw-w64-ucrt-x86_64-miniupnpc
+            mingw-w64-ucrt-x86_64-nsis
+            mingw-w64-ucrt-x86_64-onevpl
+            mingw-w64-ucrt-x86_64-openssl
+            mingw-w64-ucrt-x86_64-opus
+            mingw-w64-ucrt-x86_64-toolchain
+            mingw-w64-ucrt-x86_64-nlohmann_json
+            mingw-w64-ucrt-x86_64-ninja
+      - name: Test native feedback policy
+        shell: msys2 {0}
+        run: |
+          g++ -std=c++20 -Wall -Wextra -Werror tests/native-feedback/policy_test.cpp -o policy-test.exe
+          ./policy-test.exe
+      - name: Build Apollo
+        shell: msys2 {0}
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DBUILD_DOCS=OFF -DBUILD_TESTS=OFF
+          cmake --build build --parallel 4
+          cpack -G NSIS --config build/CPackConfig.cmake
+      - name: Describe personal development/testing build
+        shell: bash
+        run: |
+          cat > PERSONAL_BUILD_INFO.md <<'NOTICE'
+          # UNOFFICIAL PERSONAL DEVELOPMENT / TESTING PREVIEW
+
+          Maintained by R3VALATiON. This is an independent experimental fork, not an official release of the original or Extended upstream project. No upstream affiliation or endorsement is implied.
+
+          This artifact may contain incomplete or hardware-unverified features. The successful CI checks apply only to this source revision; they do not establish physical-controller or driver compatibility.
+
+          Repository: ${{ github.repository }}
+          Revision: ${{ github.sha }}
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          NOTICE
+          cat PERSONAL_BUILD_INFO.md >> "$GITHUB_STEP_SUMMARY"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: UNOFFICIAL-Personal-Development-Testing-Apollo-Windows-x64
+          path: |
+            build/**/*.exe
+            build/**/*.zip
+            BUILD_NOTICE.md
+            BUILD_NOTES.md
+            PERSONAL_BUILD_INFO.md
+          if-no-files-found: error
