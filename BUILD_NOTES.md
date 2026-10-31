@@ -12,11 +12,11 @@ Upstream authors retain credit and their original licence terms. These builds ar
 
 Every workflow run, downloaded artifact and build notice is labelled **Personal Development / Testing Preview — UNOFFICIAL**. Future release descriptions must repeat this disclaimer and be marked as pre-releases.
 
-Suggested release title: **Apollo Windows v0.2.0 — Personal Development & Testing Preview (Unofficial)**.
+Initial prerelease: [v0.2.0-personal-preview.1](https://github.com/R3VALATiON/Apollo-Extended/releases/tag/v0.2.0-personal-preview.1), with the Windows x64 NSIS installer, changelog, source revision, provenance and SHA-256 checksums.
 
 ## Current validation
 
-The isolated C++20 feedback-policy parser/lease test passed. The complete Windows application/installer has not yet been built or validated on this fork. The prepared Windows workflow must finish successfully before a Windows build is called available.
+Native-feedback policy tests, installer PowerShell syntax checks, full Windows compilation and NSIS packaging passed in [GitHub Actions](https://github.com/R3VALATiON/Apollo-Extended/actions/runs/41237024163) for source `5a4198ab9fe108c4cf569308270306e6ce13f0bf`. The installer is attached to the initial prerelease.
 
 Physical controller feedback, native game recognition, connection-quality switching and the matched Windows driver stack have not yet been validated on the user's hardware. Successful compilation is not proof that those hardware paths work.
 
